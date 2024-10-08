@@ -6,6 +6,7 @@
 #include "sqlite3.h"
 #include "types.h"
 #include "utils.h"
+#include <functional>
 #include <vector>
 
 namespace opsqlite {
@@ -28,9 +29,11 @@ BridgeResult opsqlite_open(std::string const &dbName, std::string const &dbPath,
                            std::string const &sqlite_vec_path,
                            std::string const &encryptionKey);
 #else
-BridgeResult opsqlite_open(std::string const &name, std::string const &path,
-                           std::string const &crsqlite_path,
-                           std::string const &sqlite_vec_path);
+BridgeResult
+opsqlite_open(std::string const &name, std::string const &path,
+              std::function<void(int, const std::string &)> &logCallback,
+              std::string const &crsqlite_path,
+              std::string const &sqlite_vec_path);
 #endif
 
 BridgeResult opsqlite_close(std::string const &name);

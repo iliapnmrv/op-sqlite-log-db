@@ -72,6 +72,17 @@ void install(jsi::Runtime &rt, std::shared_ptr<react::CallInvoker> invoker,
           options.getProperty(rt, "encryptionKey").asString(rt).utf8(rt);
     }
 
+    std::shared_ptr<jsi::Function> jsLogCallback;
+    if (options.hasProperty(rt, "onError") && options.getProperty(rt, "onError").isObject()) {
+      jsLogCallback = std::make_shared<jsi::Function>(options.getProperty(rt, "onError").asObject(rt).asFunction(rt));
+    }
+
+    std::function<void(int, const std::string&)> logCallback = [jsLogCallback, &rt](int code, const std::string& message) {
+      if (jsLogCallback) {
+        jsLogCallback->call(rt, jsi::Value(code), jsi::String::createFromUtf8(rt, message));
+      }
+    };
+
 #ifdef OP_SQLITE_USE_SQLCIPHER
     if (encryptionKey.empty()) {
       throw std::runtime_error(
@@ -90,7 +101,7 @@ void install(jsi::Runtime &rt, std::shared_ptr<react::CallInvoker> invoker,
     }
 
     std::shared_ptr<DBHostObject> db = std::make_shared<DBHostObject>(
-        rt, path, invoker, thread_pool, name, path, _crsqlite_path,
+        rt, path, invoker, thread_pool, name, path, logCallback, _crsqlite_path,
         _sqlite_vec_path, encryptionKey);
     dbs.emplace_back(db);
     return jsi::Object::createFromHostObject(rt, db);

@@ -5,6 +5,7 @@
 #include "types.h"
 #include <ReactCommon/CallInvoker.h>
 #include <any>
+#include <functional>
 #include <jsi/jsi.h>
 #include <unordered_map>
 #include <vector>
@@ -31,7 +32,9 @@ public:
   DBHostObject(jsi::Runtime &rt, std::string &base_path,
                std::shared_ptr<react::CallInvoker> js_call_invoker,
                std::shared_ptr<ThreadPool> thread_pool, std::string &db_name,
-               std::string &path, std::string &crsqlite_path,
+               std::string &path,
+               std::function<void(int, const std::string &)> &logCallback,
+               std::string &crsqlite_path,
                std::string &sqlite_vec_path, std::string &encryption_key);
 
 #ifdef OP_SQLITE_USE_LIBSQL

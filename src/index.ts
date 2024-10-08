@@ -185,6 +185,7 @@ type OPSQLiteProxy = {
     name: string;
     location?: string;
     encryptionKey?: string;
+    onError?: (errorCode: number, msg: string) => void;
   }) => DB;
   openRemote: (options: { url: string; authToken: string }) => DB;
   openSync: (options: {
@@ -441,6 +442,7 @@ export const open = (options: {
   name: string;
   location?: string;
   encryptionKey?: string;
+  onError?: (errorCode: number, msg: string) => void;
 }): DB => {
   const db = OPSQLite.open(options);
   const enhancedDb = enhanceDB(db, options);

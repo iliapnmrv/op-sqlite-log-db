@@ -3,6 +3,7 @@
 #include "SmartHostObject.h"
 #include "logs.h"
 #include "utils.h"
+#include <functional>
 #include <iostream>
 #include <unordered_map>
 #include <variant>
@@ -56,10 +57,11 @@ BridgeResult opsqlite_open(std::string const &name,
                            std::string const &sqlite_vec_path,
                            std::string const &encryptionKey) {
 #else
-BridgeResult opsqlite_open(std::string const &name,
-                           std::string const &last_path,
-                           std::string const &crsqlite_path,
-                           std::string const &sqlite_vec_path) {
+BridgeResult
+opsqlite_open(std::string const &name, std::string const &last_path,
+              std::function<void(int, const std::string &)> &logCallback,
+              std::string const &crsqlite_path,
+              std::string const &sqlite_vec_path) {
 
   if (dbMap.count(name) != 0) {
     throw std::runtime_error(
@@ -73,6 +75,13 @@ BridgeResult opsqlite_open(std::string const &name,
       SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX;
 
   sqlite3 *db;
+
+  std::cout << "hello world" << &logCallback;
+
+  if (logCallback)
+  {
+    sqlite3_config(SQLITE_CONFIG_LOG, &logCallback);
+  }
 
   int status = sqlite3_open_v2(dbPath.c_str(), &db, sqlOpenFlags, nullptr);
 

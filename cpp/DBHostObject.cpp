@@ -8,6 +8,7 @@
 #include "logs.h"
 #include "macros.h"
 #include "utils.h"
+#include <functional>
 #include <iostream>
 
 namespace opsqlite {
@@ -170,6 +171,7 @@ DBHostObject::DBHostObject(jsi::Runtime &rt, std::string &base_path,
                            std::shared_ptr<react::CallInvoker> jsCallInvoker,
                            std::shared_ptr<ThreadPool> thread_pool,
                            std::string &db_name, std::string &path,
+                           std::function<void(int, const std::string &)> &logCallback,   
                            std::string &crsqlite_path,
                            std::string &sqlite_vec_path,
                            std::string &encryption_key)
@@ -183,7 +185,7 @@ DBHostObject::DBHostObject(jsi::Runtime &rt, std::string &base_path,
   BridgeResult result = opsqlite_libsql_open(db_name, path, crsqlite_path);
 #else
   BridgeResult result =
-      opsqlite_open(db_name, path, crsqlite_path, sqlite_vec_path);
+      opsqlite_open(db_name, path, logCallback, crsqlite_path, sqlite_vec_path);
 #endif
 
   if (result.type == SQLiteError) {

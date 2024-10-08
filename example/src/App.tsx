@@ -64,13 +64,18 @@ export default function App() {
   }, true);
 
   const shareDb = async () => {
+    console.log('shareDb');
+
     try {
       const db = open({
         name: 'shareableDb.sqlite',
+        onError(errorCode, msg) {
+          console.log('errorFromDb', errorCode, msg);
+        },
       });
 
       await db.execute(
-        'CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY, name TEXT)',
+        'CREATE TABL IF NOT EXISTS test (id INTEGER PRIMARY KEY, name TEXT)',
       );
       await db.execute("INSERT INTO test (name) VALUES ('test')");
       const res = await db.execute('SELECT * FROM test');
